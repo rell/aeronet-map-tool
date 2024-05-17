@@ -99,7 +99,6 @@ export class MarkerManager {
           this.map.setView(latlng);
 
           // Removed to fix error relating to chart generation
-          console.log(this.startDate);
           // Get the URL for the average data for the current site and time period
           //if (parseInt(this.endDate[1]) - 1 !== this.startDate) {
           //  this.startDate[1] = parseInt(this.endDate[1]) - 1;
@@ -109,9 +108,8 @@ export class MarkerManager {
           //}
           // // if(this.startDate[1] = )
 
-          // console.log(this.startDate, this.endDate)
-
           const avgUrl = await getAvgUrl(site, this.endDate, this.startDate);
+
           // Get the full data for the current site and time period
           const timedSiteData = await getFullData(avgUrl);
           // Build a chart from the full data
@@ -149,6 +147,15 @@ export class MarkerManager {
           // Bind to tool tip click like purple map
           // fetch full data ( past hr avg  using data given in full data set)
           // refer to https://stackoverflow.com/questions/42604005/hover-of-marker-in-leaflet
+
+          // fixes initial load no currentArg
+          if (this.currentArg == undefined) {
+            var currentUTC = new Date().getUTCHours();
+            // Calculate the previous UTC hour
+            var previousUTC = (currentUTC - 1 + 24) % 24;
+
+            this.currentArg = `?year=${this.startDate[0]}&month=${parseInt(this.startDate[1]) + 1}&day=${this.startDate[2]}&year2=${this.startDate[0]}&month2=${parseInt(this.startDate[1]) + 1}&day2=${this.startDate[2]}&hour=${previousUTC}&hour2=${currentUTC}&AOD15=1&AVG=10&if_no_html=1`;
+          }
 
           // Update the content of the extended popup with information about the site and the most recent reading
           extendedPopup.setContent(`<p><span style='font-weight:bold'>Site is online</span> </p>
@@ -636,4 +643,3 @@ export class MarkerManager {
     });
   }
 }
-
